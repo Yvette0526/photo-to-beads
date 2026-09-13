@@ -41,3 +41,12 @@
 
 我想把照片变成可以实际手工制作的拼豆图纸，让编程和手工创作结合起来。
 
+## Example
+
+Input photo:
+
+![Input](examples/input.jpg)
+
+Output pixel art:
+
+![Output](examples/output.png)
