@@ -1,6 +1,13 @@
 from collections import Counter
 from PIL import Image, ImageDraw
 
+def simplify_near_white(color, threshold=235):
+    r, g, b = color
+
+    if r >= threshold and g >= threshold and b >= threshold:
+        return (255, 255, 255)
+
+    return color
 
 def convert_image_to_bead_pattern(
     input_path,
@@ -22,9 +29,9 @@ def convert_image_to_bead_pattern(
     color_counter = Counter()
 
     for y in range(grid_size):
-        for x in range(grid_size):
-            color = small_image.getpixel((x, y))
-            color_counter[color] += 1
+    for x in range(grid_size):
+        color = simplify_near_white(small_image.getpixel((x, y)))
+        color_counter[color] += 1
 
             left = x * bead_size
             top = y * bead_size
