@@ -50,3 +50,13 @@ Input photo:
 Output pixel art:
 
 ![Output](examples/output.png)
+
+## Example
+
+Pixel bead pattern:
+
+![Pattern](examples/pattern.png)
+
+Color count:
+
+[View color count](examples/color-count.md)
