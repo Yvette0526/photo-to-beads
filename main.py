@@ -1,13 +1,30 @@
 from collections import Counter
 from PIL import Image, ImageDraw
 
-def simplify_near_white(color, threshold=235):
+def simplify_neutral_color(color, neutral_tolerance=12):
     r, g, b = color
 
-    if r >= threshold and g >= threshold and b >= threshold:
-        return (255, 255, 255)
+    is_neutral = (
+        abs(r - g) <= neutral_tolerance
+        and abs(g - b) <= neutral_tolerance
+        and abs(r - b) <= neutral_tolerance
+    )
 
-    return color
+    if not is_neutral:
+        return color
+
+    brightness = (r + g + b) // 3
+
+    if brightness >= 235:
+        return (255, 255, 255)
+    if brightness >= 200:
+        return (220, 220, 220)
+    if brightness >= 150:
+        return (170, 170, 170)
+    if brightness >= 90:
+        return (100, 100, 100)
+
+    return (40, 40, 40)
 
 def convert_image_to_bead_pattern(
     input_path,
@@ -30,7 +47,7 @@ def convert_image_to_bead_pattern(
 
     for y in range(grid_size):
         for x in range(grid_size):
-            color = simplify_near_white(small_image.getpixel((x, y)))
+            color = simplify_neutral_color(small_image.getpixel((x, y)))
             color_counter[color] += 1
 
             left = x * bead_size
