@@ -8,7 +8,7 @@ def convert_image_to_bead_pattern(
     color_count_path,
     grid_size=32,
     bead_size=20,
-    colors=16,
+    colors=32,
 ):
     image = Image.open(input_path).convert("RGB")
 
@@ -53,5 +53,5 @@ if __name__ == "__main__":
         color_count_path="examples/color-count.md",
         grid_size=32,
         bead_size=20,
-        colors=16,
+        colors=32,
     )
