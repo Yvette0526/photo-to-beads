@@ -1,25 +1,21 @@
 from collections import Counter
+import json
+from pathlib import Path
+
 from PIL import Image, ImageDraw
 
-BEAD_PALETTE = [
-    ("White", (255, 255, 255)),
-    ("Light Gray", (220, 220, 220)),
-    ("Gray", (170, 170, 170)),
-    ("Dark Gray", (100, 100, 100)),
-    ("Black", (40, 40, 40)),
-    ("Cream", (239, 226, 196)),
-    ("Tan", (216, 197, 179)),
-    ("Brown", (117, 88, 70)),
-    ("Red", (200, 50, 50)),
-    ("Orange", (230, 120, 45)),
-    ("Yellow", (240, 210, 70)),
-    ("Green", (80, 160, 90)),
-    ("Light Blue", (140, 187, 198)),
-    ("Blue", (74, 165, 193)),
-    ("Teal", (82, 178, 194)),
-    ("Purple", (167, 162, 201)),
-    ("Dark Purple", (117, 108, 137)),
-]
+
+DEFAULT_PALETTE_PATH = "palettes/basic-40.json"
+
+
+def load_bead_palette(palette_path):
+    with open(palette_path, "r", encoding="utf-8") as file:
+        palette_data = json.load(file)
+
+    return [
+        (color["name"], tuple(color["rgb"]))
+        for color in palette_data
+    ]
 
 
 def color_distance(color_a, color_b):
@@ -52,9 +48,9 @@ def simplify_neutral_color(color, neutral_tolerance=12):
     return (40, 40, 40)
 
 
-def match_bead_color(color):
+def match_bead_color(color, bead_palette):
     bead_name, bead_color = min(
-        BEAD_PALETTE,
+        bead_palette,
         key=lambda bead: color_distance(color, bead[1]),
     )
     return bead_name, bead_color
@@ -67,8 +63,10 @@ def convert_image_to_bead_pattern(
     grid_size=32,
     bead_size=20,
     colors=32,
+    palette_path=DEFAULT_PALETTE_PATH,
 ):
     image = Image.open(input_path).convert("RGB")
+    bead_palette = load_bead_palette(palette_path)
 
     small_image = image.resize((grid_size, grid_size), Image.Resampling.LANCZOS)
     small_image = small_image.quantize(colors=colors).convert("RGB")
@@ -82,7 +80,7 @@ def convert_image_to_bead_pattern(
     for y in range(grid_size):
         for x in range(grid_size):
             color = simplify_neutral_color(small_image.getpixel((x, y)))
-            bead_name, bead_color = match_bead_color(color)
+            bead_name, bead_color = match_bead_color(color, bead_palette)
             bead_counter[(bead_name, bead_color)] += 1
 
             left = x * bead_size
@@ -113,4 +111,5 @@ if __name__ == "__main__":
         grid_size=32,
         bead_size=20,
         colors=32,
+        palette_path=Path("palettes") / "basic-40.json",
     )
